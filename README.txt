@@ -8,3 +8,5 @@ onenote:https://liveuclac-my.sharepoint.com/personal/uceezzz_ucl_ac_uk/Documents
 数据集给取回后只需要分成images和labels两个文件夹就行 里面分别有三个文件夹 train val test
 
 detect_old是之前给msj进行检测，先把一个大图拆成小图检测再拼接回去
+
+.
