@@ -133,7 +133,10 @@ def detect(save_img=False):
                         with open(txt_path + '.txt', 'a') as f:
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
                     #################################################################################
-                    with open("/scratch/uceezzz/Dataset/Dam_dataset/拼图/Tiles19_YR/10_415_75/result.txt", "a") as f_all:
+                    # result_filename = os.path.join("修改为你想存放所有检测结果result.txt的路径，比如/scratch/uceezzz", f"result_{os.path.basename(folder)}.txt")
+                    result_filename = os.path.join("/scratch/uceezzz/Dataset/Dam_dataset/test", f"result_{os.path.basename(folder)}.txt")
+                    print(os.path.basename(folder))
+                    with open(result_filename, "a") as f_all:
                         # Get bounding box coordinates as integers
                         # print('writing one')
                         filename_only = os.path.basename(p)
@@ -185,11 +188,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #请注意这个pt文件必须放在主目录下面否则会报错
     parser.add_argument('--weights', nargs='+', type=str, default='best_62.pt', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='/scratch/uceezzz/Dataset/Dam_dataset/拼图/Tiles19_YR/10_415_75/joined/', help='source')  # file/folder, 0 for webcam
+    #这里定义你所有要检测的文件夹/path/to/folder1,/path/to/folder2,/path/to/folder3  用逗号隔开所有的路径
+    all_path = '/scratch/uceezzz/Dataset/Dam_dataset/test/1,/scratch/uceezzz/Dataset/Dam_dataset/test/2'
+    parser.add_argument('--source', type=str, default=all_path, help='source')  # file/folder, 0 for webcam
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
-    parser.add_argument('--device', default='0,1,2,3', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+    parser.add_argument('--device', default='0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--view-img', action='store_true', help='display results')
     parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
     parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')
@@ -205,11 +210,19 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     print(opt)
     #check_requirements(exclude=('pycocotools', 'thop'))
-
+    folders = opt.source.split(",")
     with torch.no_grad():
         if opt.update:  # update all models (to fix SourceChangeWarning)
             for opt.weights in ['yolov7.pt']:
                 detect()
                 strip_optimizer(opt.weights)
         else:
-            detect()
+            for folder in folders:
+                opt.source = folder  # 设置当前要处理的文件夹
+                detect()
+
+
+
+
+
+
